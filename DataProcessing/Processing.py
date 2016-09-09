@@ -299,7 +299,7 @@ def organizeVariables(experimentDF):
              'Tableta_Recubierta','longitudondamedicion','velocidadrotacional','phmedio','volumen','Metodo_HPLC','Metodo_UV',
              'Aparato_Dis1','Aparato_Dis2','Porcentaje','Tamano_Particula','Peso_Molecular','LogP','pKa_Basico','Solubilidad_en_Agua',
              'LogS','Area_Superficial_Polar','Carga_Fisiologica','Enlaces_Rotables','Enlaces_Aceptores_de_Hidrogeno',
-             'Enlaces_Donadores_de_Hidrogeno','Aglutinantes','Desintegrantes','Deslizantes','Diluyente','Lubricantes','Otros',
+             'Enlaces_Donadores_de_Hidrogeno','Aglutinantes','Desintegrantes','Deslizantes','Diluyentes','Lubricantes','Otros',
              'Surfactantes','Solubilidad_Aglutinantes','Solubilidad_Desintegrantes','Solubilidad_Deslizantes','Solubilidad_Diluyentes',
              'Solubilidad_Lubricantes','Solubilidad_Surfactantes','Tamano_Aglutinantes','Tamano_Desintegrantes','Tamano_Deslizantes',
              'Tamano_Diluyentes','Tamano_Lubricantes','Tamano_Otros','Tamano_Surfactantes','Tiempo_1','Tiempo_2','Tiempo_3']

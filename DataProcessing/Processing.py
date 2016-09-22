@@ -57,7 +57,7 @@ def organizeExperiment(experimentJSON):
 # - experimentDF(Data Frame): tabla con las variables para el código, porcentaje y tamaño de partícula del PA valorado
 def getInfoPA(experimentJSON):
     PAs = experimentJSON['principiosActivos']
-    namePA = experimentJSON['principioactivovalorado']
+    namePA = experimentJSON['principioActivoValorado']
 
     percentage = 0
     size = 0
@@ -67,7 +67,7 @@ def getInfoPA(experimentJSON):
             percentage = PA['porcentaje']
             size = PA['tamanoParticula']    
 
-    experimentDF = pd.DataFrame([[code,percentage,size]],columns=['Codigo','Porcentaje','Tamano_Particula'])
+    experimentDF = pd.DataFrame([[code,percentage,size]],columns=['codigo','porcentajePA','tamanoParticulaPA'])
     
     return experimentDF
 
@@ -85,10 +85,10 @@ def getInfoExcipient(experimentJSON):
     # Se asocia por tipo la solubilidad para cada excipiente presente en una formulación
     solubilities = getSolubility(infoExcipients)
     
-    names = ['Aglutinantes','Desintegrantes','Deslizantes','Diluyentes','Lubricantes','Surfactantes','Otros',
-             'Tamano_Aglutinantes','Tamano_Desintegrantes','Tamano_Deslizantes','Tamano_Diluyentes','Tamano_Lubricantes',
-             'Tamano_Surfactantes','Tamano_Otros','Solubilidad_Aglutinantes','Solubilidad_Desintegrantes',
-             'Solubilidad_Deslizantes','Solubilidad_Diluyentes','Solubilidad_Lubricantes','Solubilidad_Surfactantes']
+    names = ['aglutinantes','desintegrantes','deslizantes','diluyentes','lubricantes','surfactantes','otros',
+             'tamanoAglutinantes','tamanoDesintegrantes','tamanoDeslizantes','tamanoDiluyentes','tamanoLubricantes',
+             'tamanoSurfactantes','tamanoOtros','solubilidadAglutinantes','solubilidadDesintegrantes',
+             'solubilidadDeslizantes','solubilidadDiluyentes','solubilidadLubricantes','solubilidadSurfactantes']
     
     percentageExcipients = []    
     sizeExcipients = []    
@@ -153,20 +153,21 @@ def getMultiInputs(experimentJSON):
 #   - Tipo Excipient(List)
 #     - Solubilidad(Array)
 def getSolubility(infoExcipients):
-    solubility = pd.read_excel('C:\Users\ing-y-soft\Documents\Proyecto\Data\Info_Fija\Solubilidad_de_Excipientes_en_Agua.xlsx')
-    solubility.Codigo = [int(s[1:]) for s in solubility.Codigo]      
+    # ¡¡¡REEMPLAZAR POR LA TABLA EN EL SERVIDOR!!!
+    solubility = pd.read_excel('C:/Users/ing-y-soft/Documents/Proyecto/Code/Integracion/tablas/Solubilidad_de_Excipientes_Integracion2.xlsx')
+    solubility.codigo = [int(s[1:]) for s in solubility.codigo]      
     
     typeExcipients = []    
     for excipient in infoExcipients[:-1]:
-        typeExcipients.append(pd.DataFrame(excipient[0],columns=['Codigo']))
+        typeExcipients.append(pd.DataFrame(excipient[0],columns=['codigo']))
 
     typeSolu = []
     for df in typeExcipients:
-        typeSolu.append(pd.merge(df,solubility,on='Codigo'))
+        typeSolu.append(pd.merge(df,solubility,on='codigo'))
 
     solubilities = []
     for element in typeSolu:
-        solubilities.append(np.array(element.Solubilidad_En_Agua))
+        solubilities.append(np.array(element.solubilidadEnAgua))
 
     return solubilities
 
@@ -177,13 +178,13 @@ def getSolubility(infoExcipients):
 # PARAMETROS DE SALIDA
 # - categorical(Data Frame): tabla con las variables categoricas codificadas para un experimento registrado
 def getOneHotEncoding(experimentJSON):
-    names = ['Via_Seca','Via_Humeda','Tableta_Recubierta','Tableta_No_Recubierta','Metodo_HPLC','Metodo_UV','Aparato_Dis1',
-             'Aparato_Dis2']
+    names = ['viaSeca','viaHumeda','tabletaRecubierta','tabletaNoRecubierta','metodoHPLC','metodoUV','aparatoDis1',
+             'aparatoDis2']
     
     via = experimentJSON['via']
     recubrimiento = experimentJSON['recubrimiento']
     metodo = experimentJSON['metodo']
-    aparato = experimentJSON['aparatodisolucion']
+    aparato = experimentJSON['aparatoDisolucion']
 
     values = []
     if(via == 'Via_Seca'):
@@ -194,11 +195,11 @@ def getOneHotEncoding(experimentJSON):
         values.extend([1,0])
     else:
         values.extend([0,1])
-    if(metodo == 'HPLC'):
+    if(metodo == 'Metodo_HPLC'):
         values.extend([1,0])
     else:
         values.extend([0,1])
-    if(aparato == u'Aparato Disolución 1'):
+    if(aparato == 'Aparato_Dis1'):
         values.extend([1,0])
     else:
         values.extend([0,1])
@@ -213,13 +214,15 @@ def getOneHotEncoding(experimentJSON):
 # PARAMETROS DE SALIDA
 # - experimentDF(Data Frame): misma tabla de entrada junto con las variables físico químicas del experimiento
 def getPhysicalChemical(experimentDF):
-    physicalChemical = pd.read_csv('C:\Users\ing-y-soft\Documents\Proyecto\Data\Info_Fija\PA_Esp_Eng_Var.csv')
-    physicalChemical.Codigo = [int(s[1:]) for s in physicalChemical.Codigo]
+    # ¡¡¡REEMPLAZAR POR LA TABLA EN EL SERVIDOR!!!
+    physicalChemical = pd.read_csv('C:/Users/ing-y-soft/Documents/Proyecto/Code/Integracion/tablas/PA_Esp_Eng_Var_Integracion.csv')
+    #physicalChemical = pd.read_csv('C:\Users\ing-y-soft\Documents\Proyecto\Code\Integracion\tablas\PA_Esp_Eng_Var_Integracion.csv')
+    physicalChemical.codigo = [int(s[1:]) for s in physicalChemical.codigo]
     
-    experimentDF = pd.merge(experimentDF,physicalChemical,on='Codigo')
+    experimentDF = pd.merge(experimentDF,physicalChemical,on='codigo')
     
-    erase = ['Codigo','Nombre_Esp','Nombre_Eng','Hidroxilos','Aldehidos','Cetonas','Carboxilos','Aminas','Iminas',
-             'Amidas','Imidas','Nitro','Nitrilo','Hidrazina','Haluros','Eter','Azo_Nitrogenado']
+    erase = ['codigo','nombreEsp','nombreEng','hidroxilos','aldehidos','cetonas','carboxilos','aminas','iminas',
+             'amidas','imidas','nitro','nitrilo','hidrazina','haluros','eter','azoNitrogenado']
     experimentDF.drop(erase,axis=1,inplace=True)
     
     return experimentDF
@@ -231,7 +234,7 @@ def getPhysicalChemical(experimentDF):
 # PARAMETROS DE SALIDA
 # - timesDF(Data Frame): tabla con los tiempos seleccionados del perfil de disolución de un experimento registrado
 def getTimes(experimentJSON):    
-    names = ['Tiempo_1','Tiempo_2','Tiempo_3']
+    names = ['tiempo1','tiempo2','tiempo3']
     times = experimentJSON['tiempos']
     i = 0
     while(times[i]['media'] < 85):
@@ -249,17 +252,17 @@ def getTimes(experimentJSON):
 # - generalVariables(Data Frame): tabla con información de variables que no requieren ningún tipo de procesamiento para un 
 #   experimento registrado
 def getInfoGeneral(experimentJSON):    
-    names = ['humedadgranulado','proporciongranulado','tiempomezcladogranulado','proporcionsolvente','temperaturasecado',
-             'tiemposecado','largopromedio','largostd','anchopromedio','anchostd','alturapromedio','alturastd',
-             'tiempomezclatotalformula','pesopromedio','pesostd','durezapromedio','durezastd','tamanoparticulamezcla',
-             'humedadmezcla','tiempodesintegracionminima','tiempodesintegracionmaxima', 'longitudondamedicion',
-             'velocidadrotacional','phmedio','volumen']
+    names = ['humedadGranulado','proporcionGranulado','tiempoMezcladoGranulado','proporcionSolvente','temperaturaSecado',
+             'tiempoSecado','largoPromedio','largoSTD','anchoPromedio','anchoSTD','alturaPromedio','alturaSTD',
+             'tiempoMezclaTotalFormula','pesoPromedio','pesoSTD','durezaPromedio','durezaSTD','tamanoParticulaMezcla',
+             'humedadMezcla','tiempoDesintegracionMinima','tiempoDesintegracionMaxima', 'longitudOnda',
+             'velocidadRotacional','PHMedio','volumen']
     
     variables = []
     for var in names:
         variables.append(experimentJSON[var])            
     generalVariables = pd.DataFrame([variables],columns=names)
-    return generalVariables 
+    return generalVariables
 
 # METODO: se organizan las variables de la tabla construida con la información de un experimento de acuerdo al orden de 
 # entrada del simulador
@@ -268,18 +271,18 @@ def getInfoGeneral(experimentJSON):
 # PARAMETROS DE SALIDA
 # - experimentDF(Data Frame): tabla con las variables organizadas
 def organizeVariables(experimentDF):
-    order = ['humedadgranulado','proporciongranulado','tiempomezcladogranulado','proporcionsolvente','temperaturasecado',
-             'tiemposecado','largopromedio','largostd','anchopromedio','anchostd','alturapromedio','alturastd',
-             'tiempomezclatotalformula','pesopromedio','pesostd','durezapromedio','durezastd','tamanoparticulamezcla',
-             'humedadmezcla','tiempodesintegracionminima','tiempodesintegracionmaxima',
-             'Via_Humeda','Via_Seca','Tableta_No_Recubierta','Tableta_Recubierta','longitudondamedicion',
-             'velocidadrotacional','phmedio','volumen','Metodo_HPLC','Metodo_UV','Aparato_Dis1','Aparato_Dis2','Porcentaje','Tamano_Particula',
-             'Peso_Molecular','LogP','pKa_Basico','Solubilidad_en_Agua','LogS','Area_Superficial_Polar','Carga_Fisiologica',
-             'Enlaces_Rotables','Enlaces_Aceptores_de_Hidrogeno','Enlaces_Donadores_de_Hidrogeno','Aglutinantes',
-             'Desintegrantes','Deslizantes','Diluyentes','Lubricantes','Otros','Surfactantes','Solubilidad_Aglutinantes',
-             'Solubilidad_Desintegrantes','Solubilidad_Deslizantes','Solubilidad_Diluyentes','Solubilidad_Lubricantes',
-             'Solubilidad_Surfactantes','Tamano_Aglutinantes','Tamano_Desintegrantes','Tamano_Deslizantes',
-             'Tamano_Diluyentes','Tamano_Lubricantes','Tamano_Otros','Tamano_Surfactantes','Tiempo_1','Tiempo_2','Tiempo_3']
+    order = ['humedadGranulado','proporcionGranulado','tiempoMezcladoGranulado','proporcionSolvente','temperaturaSecado',
+             'tiempoSecado','largoPromedio','largoSTD','anchoPromedio','anchoSTD','alturaPromedio','alturaSTD',
+             'tiempoMezclaTotalFormula','pesoPromedio','pesoSTD','durezaPromedio','durezaSTD','tamanoParticulaMezcla',
+             'humedadMezcla','tiempoDesintegracionMinima','tiempoDesintegracionMaxima','viaSeca','viaHumeda',
+             'tabletaRecubierta','tabletaNoRecubierta','longitudOnda','velocidadRotacional','PHMedio','volumen','metodoHPLC',
+             'metodoUV','aparatoDis1','aparatoDis2','porcentajePA','tamanoParticulaPA','pesoMolecular','logP','pKaBasico',
+             'solubilidadEnAgua','logS','areaSuperficialPolar','cargaFisiologica','enlacesRotables',
+             'enlacesAceptoresDeHidrogeno','enlacesDonadoresDeHidrogeno','aglutinantes','desintegrantes','deslizantes',
+             'diluyentes','lubricantes','otros','surfactantes','solubilidadAglutinantes','solubilidadDesintegrantes',
+             'solubilidadDeslizantes','solubilidadDiluyentes','solubilidadLubricantes','solubilidadSurfactantes',
+             'tamanoAglutinantes','tamanoDesintegrantes','tamanoDeslizantes','tamanoDiluyentes','tamanoLubricantes',
+             'tamanoOtros','tamanoSurfactantes','tiempo1','tiempo2','tiempo3']
     experimentDF = experimentDF.loc[:,order]
     
     return experimentDF

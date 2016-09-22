@@ -8,7 +8,8 @@ import pickle
 # PARAMETROS DE SALIDA:
 # - model(Model): actual modelo del sistema
 def getModel():
-    route = open('C:\Users\ing-y-soft\Documents\Proyecto\Data\Save_results\Resultados_Entrenamientos\Optimizacion\model.pckl')
+    #¡¡¡REEMPLAZAR POR EL MODELO EN EL SERVIDOR!!!
+    route = open('C:\Users\ing-y-soft\Documents\Proyecto\Code\Integracion\model.pckl')
     model = pickle.load(route)
     route.close()
     return model
